@@ -11,7 +11,6 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(PhoneNotFoundException.class)
     public ModelAndView handleException(PhoneNotFoundException exception) {
         ModelAndView modelAndView = new ModelAndView("errorPages/notFoundPhone");
-        modelAndView.addObject("errorCode", exception.getErrorCode());
         modelAndView.addObject("errorMessage", exception.getErrorMessage());
         return modelAndView;
     }

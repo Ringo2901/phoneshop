@@ -17,9 +17,10 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,22 +44,33 @@ public class JdbcPhoneDaoTest {
         jdbcTemplate.setDataSource(dataSource);
     }
 
-    @Test
-    public void notEmptyDataBaseWhenPhoneDaoTestFindAll() {
-        Assert.assertFalse(jdbcPhoneDao.findAll(0, 5).isEmpty());
-    }
-
     @After
     public void tearDown() {
         JdbcTestUtils.dropTables(jdbcTemplate, "colors", "phones");
     }
 
     @Test
-    public void whenTestPhoneDaoGet() {
-        Phone expectedPhone;
-        Phone actualParameterPhone = getPhone();
-        expectedPhone = jdbcPhoneDao.get(1000L).get();
+    public void notEmptyDataBaseWhenPhoneDaoTestFindAll() {
+        assertFalse(jdbcPhoneDao.findAll(0, 5).isEmpty());
+    }
+
+    @Test
+    public void emptyDataBaseWhenPhoneDaoTestFindAll() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "colors", "phones");
+        assertTrue(jdbcPhoneDao.findAll(0, 5).isEmpty());
+    }
+
+    @Test
+    public void getShouldReturnCorrectPhoneById() {
+        Phone expectedPhone = getPhone();
+        Phone actualParameterPhone = jdbcPhoneDao.get(1000L).get();
         assertEquals(expectedPhone, actualParameterPhone);
+    }
+
+    @Test
+    public void getShouldReturnEmptyOptionalForNonExistingPhone() {
+        Optional<Phone> phone = jdbcPhoneDao.get(9999L);
+        assertFalse(phone.isPresent());
     }
 
     private static Phone getPhone() {
@@ -81,7 +93,7 @@ public class JdbcPhoneDaoTest {
     }
 
     @Test
-    public void whenTestPhoneDaoSave() {
+    public void savePhoneWithExistingId() {
         Phone savingPhone = new Phone();
 
         savingPhone.setId(1002L);

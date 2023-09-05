@@ -1,14 +1,17 @@
 package com.es.core.model.exceptions;
 
-import lombok.Data;
-
-@Data
 public class PhoneNotFoundException extends RuntimeException {
-    public int errorCode;
     public String errorMessage;
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
     public PhoneNotFoundException() {
-        this.errorCode = 404;
         this.errorMessage = "Phone not found!";
     }
 }

@@ -17,6 +17,12 @@ public class JdbcPhoneDao implements PhoneDao {
             "FROM phones " +
             "JOIN phone2color ON phones.id=phone2color.phoneId " +
             "JOIN colors ON phone2color.colorId=colors.id";
+    private final String SELECT_PHONE_BY_ID = "SELECT * FROM phones WHERE id = ?";
+
+    private final String SELECT_PHONE_WITH_CLR_BY_ID = "SELECT phone.*, colors.id AS colorId, colors.code AS colorCode FROM " +
+            "(" + SELECT_PHONE_BY_ID + ") AS phone LEFT JOIN phone2color " +
+            "ON phone.id = phone2color.phoneId" +
+            " LEFT JOIN colors ON phone2color.colorId = colors.id";;
     private static final String PHONES_AND_COLORS_QUERY_WITH_LIMIT_AND_OFFSET = PHONES_AND_COLORS_QUERY + " offset ? limit ?";
     private static final String INSERT_INTO_PHONES2COLORS = "INSERT INTO phone2color VALUES (?, ?)";
     private static final String DELETE_FROM_PHONES2COLORS = "DELETE FROM phone2color WHERE colorId = ? and phoneId = ?";
@@ -24,13 +30,11 @@ public class JdbcPhoneDao implements PhoneDao {
     private static final String INSERT_NEW_PHONE = "INSERT INTO phones (brand, model, price, imageUrl) values (?, ?, ?, ?)";
 
     public Optional<Phone> get(final Long key) {
-        return getPhoneListWithColors().stream()
-                .filter(phone -> phone.getId().equals(key))
-                .findAny();
+        return jdbcTemplate.query(SELECT_PHONE_WITH_CLR_BY_ID, new Object[]{key}, new PhonesExtractor()).stream().findAny();
     }
 
     private List<Phone> getPhoneListWithColors() {
-        return jdbcTemplate.query(PHONES_AND_COLORS_QUERY, new PhoneExtractor());
+        return jdbcTemplate.query(PHONES_AND_COLORS_QUERY, new PhonesExtractor());
     }
 
     public void save(final Phone phone) {
@@ -74,6 +78,6 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> findAll(int offset, int limit) {
-        return jdbcTemplate.query(PHONES_AND_COLORS_QUERY_WITH_LIMIT_AND_OFFSET, new Object[]{offset, limit}, new PhoneExtractor());
+        return jdbcTemplate.query(PHONES_AND_COLORS_QUERY_WITH_LIMIT_AND_OFFSET, new Object[]{offset, limit}, new PhonesExtractor());
     }
 }
