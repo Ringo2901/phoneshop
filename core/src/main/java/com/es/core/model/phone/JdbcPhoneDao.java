@@ -2,6 +2,7 @@ package com.es.core.model.phone;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -22,59 +23,42 @@ public class JdbcPhoneDao implements PhoneDao {
     private final String SELECT_PHONE_WITH_CLR_BY_ID = "SELECT phone.*, colors.id AS colorId, colors.code AS colorCode FROM " +
             "(" + SELECT_PHONE_BY_ID + ") AS phone LEFT JOIN phone2color " +
             "ON phone.id = phone2color.phoneId" +
-            " LEFT JOIN colors ON phone2color.colorId = colors.id";;
+            " LEFT JOIN colors ON phone2color.colorId = colors.id";
+    ;
     private static final String PHONES_AND_COLORS_QUERY_WITH_LIMIT_AND_OFFSET = PHONES_AND_COLORS_QUERY + " offset ? limit ?";
-    private static final String INSERT_INTO_PHONES2COLORS = "INSERT INTO phone2color VALUES (?, ?)";
-    private static final String DELETE_FROM_PHONES2COLORS = "DELETE FROM phone2color WHERE colorId = ? and phoneId = ?";
-    private static final String UPDATE_PHONE_PRICE = "UPDATE phones SET price = ?";
-    private static final String INSERT_NEW_PHONE = "INSERT INTO phones (brand, model, price, imageUrl) values (?, ?, ?, ?)";
+
+    private static final String INSERT_PHONE = "INSERT INTO phones (brand, model, price, imageUrl) VALUES (?, ?, ?, ?)";
+    private static final String UPDATE_PHONE = "UPDATE phones SET brand = ?, model = ?, price = ?, imageUrl = ? WHERE id = ?";
+    private static final String DELETE_COLORS = "DELETE FROM phone2color WHERE phoneId = ?";
+    private static final String INSERT_COLORS = "INSERT INTO phone2color (phoneId, colorId) VALUES (?, ?)";
+
 
     public Optional<Phone> get(final Long key) {
         return jdbcTemplate.query(SELECT_PHONE_WITH_CLR_BY_ID, new Object[]{key}, new PhonesExtractor()).stream().findAny();
     }
-
-    private List<Phone> getPhoneListWithColors() {
-        return jdbcTemplate.query(PHONES_AND_COLORS_QUERY, new PhonesExtractor());
-    }
-
+    @Transactional
     public void save(final Phone phone) {
-        List<Phone> phoneList = getPhoneListWithColors();
-        if (phoneList.contains(phone)) {
-            jdbcTemplate.update(UPDATE_PHONE_PRICE, phone.getPrice());
-            int index = phoneList.indexOf(phone);
-            updateColors(phone, phoneList.get(index));
+        if (phone.getId() == null) {
+            insertPhone(phone);
         } else {
-            jdbcTemplate.update(INSERT_NEW_PHONE, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getImageUrl());
-            insertColorsIfExists(phone);
-
+            updatePhone(phone);
         }
+        updatePhoneColors(phone);
     }
 
-    private void insertColorsIfExists(Phone phone) {
-        for (Color currentColor : phone.getColors()) {
-            jdbcTemplate.update(INSERT_INTO_PHONES2COLORS, phone.getId(), currentColor.getId());
-        }
+    private void insertPhone(Phone phone) {
+        jdbcTemplate.update(INSERT_PHONE, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getImageUrl());
     }
 
-    private void insertNewColors(Phone savedPhone, Phone currentPhone) {
-        for (Color currentColor : currentPhone.getColors()) {
-            if (!savedPhone.getColors().contains(currentColor)) {
-                jdbcTemplate.update(INSERT_INTO_PHONES2COLORS, currentPhone.getId(), currentColor.getId());
-            }
-        }
+    private void updatePhone(Phone phone) {
+        jdbcTemplate.update(UPDATE_PHONE, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getImageUrl(), phone.getId());
     }
 
-    private void deleteUnusedColors(Phone savedPhone, Phone currentPhone) {
-        for (Color currentColor : savedPhone.getColors()) {
-            if (!currentPhone.getColors().contains(currentColor)) {
-                jdbcTemplate.update(DELETE_FROM_PHONES2COLORS, currentColor.getId(), currentPhone.getId());
-            }
+    private void updatePhoneColors(Phone phone) {
+        jdbcTemplate.update(DELETE_COLORS, phone.getId());
+        for (Color color : phone.getColors()) {
+            jdbcTemplate.update(INSERT_COLORS, phone.getId(), color.getId());
         }
-    }
-
-    private void updateColors(Phone currentPhone, Phone savedPhone) {
-        deleteUnusedColors(savedPhone, currentPhone);
-        insertNewColors(savedPhone, currentPhone);
     }
 
     public List<Phone> findAll(int offset, int limit) {
