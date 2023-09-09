@@ -13,11 +13,11 @@ import com.es.core.model.phone.PhoneDao;
 @RequestMapping (value = "/productList")
 public class ProductListPageController {
     @Resource
-    private PhoneDao phoneDao;
+    private PhoneDao phone;
 
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(Model model) {
-        model.addAttribute("phones", phoneDao.findAll(0, 10));
+        model.addAttribute("phones", phone.findAll(0, 10));
         return "productList";
     }
 }

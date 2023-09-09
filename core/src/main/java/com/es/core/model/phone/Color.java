@@ -1,5 +1,8 @@
 package com.es.core.model.phone;
 
+import java.util.Objects;
+
+
 public class Color {
     private Long id;
     private String code;
@@ -16,7 +19,28 @@ public class Color {
         return code;
     }
 
-    public void setCode(final String code) {
+    public void setCode(String code) {
         this.code = code;
+    }
+
+    public Color() {
+    }
+
+    public Color(Long id, String code) {
+        this.id = id;
+        this.code = code;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Color color = (Color) o;
+        return code.equals(color.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
     }
 }

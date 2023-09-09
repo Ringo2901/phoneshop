@@ -1,5 +1,6 @@
 package com.es.core.model.phone;
 
+
 public class Stock {
     private Phone phone;
     private Integer stock;
@@ -26,6 +27,15 @@ public class Stock {
     }
 
     public void setReserved(Integer reserved) {
+        this.reserved = reserved;
+    }
+
+    public Stock() {
+    }
+
+    public Stock(Phone phone, Integer stock, Integer reserved) {
+        this.phone = phone;
+        this.stock = stock;
         this.reserved = reserved;
     }
 }

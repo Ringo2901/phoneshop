@@ -1,8 +1,9 @@
 package com.es.core.model.phone;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Phone {
@@ -27,7 +28,7 @@ public class Phone {
 
     private String os;
 
-    private Set<Color> colors = Collections.EMPTY_SET;
+    private Set<Color> colors = new HashSet<>();
 
     private String displayResolution;
 
@@ -57,12 +58,77 @@ public class Phone {
 
     private String description;
 
+    public Phone() {
+    }
+
+    public Phone(Long id, String brand, String model, BigDecimal price, BigDecimal displaySizeInches, Integer weightGr, BigDecimal lengthMm, BigDecimal widthMm, BigDecimal heightMm, Date announced, String deviceType, String os, Set<Color> colors, String displayResolution, Integer pixelDensity, String displayTechnology, BigDecimal backCameraMegapixels, BigDecimal frontCameraMegapixels, BigDecimal ramGb, BigDecimal internalStorageGb, Integer batteryCapacityMah, BigDecimal talkTimeHours, BigDecimal standByTimeHours, String bluetooth, String positioning, String imageUrl, String description) {
+        this.id = id;
+        this.brand = brand;
+        this.model = model;
+        this.price = price;
+        this.displaySizeInches = displaySizeInches;
+        this.weightGr = weightGr;
+        this.lengthMm = lengthMm;
+        this.widthMm = widthMm;
+        this.heightMm = heightMm;
+        this.announced = announced;
+        this.deviceType = deviceType;
+        this.os = os;
+        this.colors = colors;
+        this.displayResolution = displayResolution;
+        this.pixelDensity = pixelDensity;
+        this.displayTechnology = displayTechnology;
+        this.backCameraMegapixels = backCameraMegapixels;
+        this.frontCameraMegapixels = frontCameraMegapixels;
+        this.ramGb = ramGb;
+        this.internalStorageGb = internalStorageGb;
+        this.batteryCapacityMah = batteryCapacityMah;
+        this.talkTimeHours = talkTimeHours;
+        this.standByTimeHours = standByTimeHours;
+        this.bluetooth = bluetooth;
+        this.positioning = positioning;
+        this.imageUrl = imageUrl;
+        this.description = description;
+    }
+
+    public Phone(Long id, String brand, String model, BigDecimal price, String imageUrl) {
+        this.id = id;
+        this.brand = brand;
+        this.model = model;
+        this.price = price;
+        this.imageUrl = imageUrl;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getBrand() {
         return brand;
     }
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public BigDecimal getDisplaySizeInches() {
@@ -79,6 +145,30 @@ public class Phone {
 
     public void setWeightGr(Integer weightGr) {
         this.weightGr = weightGr;
+    }
+
+    public BigDecimal getLengthMm() {
+        return lengthMm;
+    }
+
+    public void setLengthMm(BigDecimal lengthMm) {
+        this.lengthMm = lengthMm;
+    }
+
+    public BigDecimal getWidthMm() {
+        return widthMm;
+    }
+
+    public void setWidthMm(BigDecimal widthMm) {
+        this.widthMm = widthMm;
+    }
+
+    public BigDecimal getHeightMm() {
+        return heightMm;
+    }
+
+    public void setHeightMm(BigDecimal heightMm) {
+        this.heightMm = heightMm;
     }
 
     public Date getAnnounced() {
@@ -161,22 +251,6 @@ public class Phone {
         this.ramGb = ramGb;
     }
 
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(final String model) {
-        this.model = model;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(final BigDecimal price) {
-        this.price = price;
-    }
-
     public BigDecimal getInternalStorageGb() {
         return internalStorageGb;
     }
@@ -241,35 +315,16 @@ public class Phone {
         this.description = description;
     }
 
-    public BigDecimal getLengthMm() {
-        return lengthMm;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Phone phone = (Phone) o;
+        return id.equals(phone.id);
     }
 
-    public void setLengthMm(BigDecimal lengthMm) {
-        this.lengthMm = lengthMm;
-    }
-
-    public BigDecimal getWidthMm() {
-        return widthMm;
-    }
-
-    public void setWidthMm(BigDecimal widthMm) {
-        this.widthMm = widthMm;
-    }
-
-    public BigDecimal getHeightMm() {
-        return heightMm;
-    }
-
-    public void setHeightMm(BigDecimal heightMm) {
-        this.heightMm = heightMm;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
