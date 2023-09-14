@@ -12,7 +12,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-lW5x5bFPd5R5J1GPpVgH5m2F5GfHJqUpktz5q5l5F5CkC4x5Kf5T5b5T5q5l5X5j5f5l5" crossorigin="anonymous">
 
-    <script src="${pageContext.servletContext.contextPath}/resources/js.addToCart.js"></script>
+    <script src="${pageContext.servletContext.contextPath}/resources/js/addToCart.js"></script>
 </head>
 <body>
 <header>

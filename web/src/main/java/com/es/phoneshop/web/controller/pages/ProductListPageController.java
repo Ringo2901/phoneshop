@@ -34,7 +34,6 @@ public class ProductListPageController {
                                   Model model) {
         List<Phone> phones = phoneDao.findAll(((pageNumber == null ? 1 : pageNumber) - 1) * PHONES_ON_PAGE, PHONES_ON_PAGE,
                 SortField.getValue(sortField), SortOrder.getValue(sortOrder), query);
-        System.out.println(phones);
         model.addAttribute("phones", phones);
         Long number = phoneDao.numberByQuery(query);
         model.addAttribute("numberOfPhones", number);

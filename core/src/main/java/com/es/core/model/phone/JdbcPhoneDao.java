@@ -56,8 +56,10 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private void updatePhoneColors(Phone phone) {
         jdbcTemplate.update(DELETE_COLORS, phone.getId());
-        for (Color color : phone.getColors()) {
-            jdbcTemplate.update(INSERT_COLORS, phone.getId(), color.getId());
+        if (phone.getColors() != null) {
+            for (Color color : phone.getColors()) {
+                jdbcTemplate.update(INSERT_COLORS, phone.getId(), color.getId());
+            }
         }
     }
 
@@ -90,7 +92,6 @@ public class JdbcPhoneDao implements PhoneDao {
                         "OR LOWER(PHONES.MODEL) LIKE LOWER('% " + query + "%')" +
                         ") ";
             }
-
             if (sortField != null) {
                 sql += "ORDER BY " + sortField.name() + " ";
                 if (sortOrder != null) {

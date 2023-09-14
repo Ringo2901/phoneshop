@@ -12,10 +12,12 @@ function addToCart(phoneId, quantity) {
         contentType: "application/json",
         success: function (data) {
             if (data.errorStatus == false) {
+                message.style.color = "green"
                 message.className = "panel panel-success";
                 messageHead.innerText = "Success";
                 status.innerHTML = "";
             } else {
+                message.style.color = "red"
                 message.className = "panel panel-danger";
                 messageHead.innerText = "Error";
                 status.innerHTML = data.message;
@@ -27,6 +29,7 @@ function addToCart(phoneId, quantity) {
             $("#cartTotalCost").text(data.totalCost);
         },
         error: function (data) {
+            message.style.color = "red"
             message.className = "panel panel-danger";
             messageHead.innerText = "Error";
             status.innerHTML = "There was an error";

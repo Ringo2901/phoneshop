@@ -22,6 +22,7 @@ public class JdbcColorDao implements ColorDao {
 
     @Override
     public List<Color> getColors(Long id) {
-        return jdbcTemplate.query(GET_QUERY, new Object[]{id}, colorExtractor);
+        return null;
+        //return jdbcTemplate.query(GET_QUERY, new Object[]{id}, colorExtractor);
     }
 }

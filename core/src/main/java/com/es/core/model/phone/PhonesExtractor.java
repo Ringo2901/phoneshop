@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 @Component
 public class PhonesExtractor implements ResultSetExtractor<List<Phone>> {
     private ColorDao colorDao = new JdbcColorDao(new ColorExtractor());
@@ -29,10 +30,15 @@ public class PhonesExtractor implements ResultSetExtractor<List<Phone>> {
             phone.setModel(resultSet.getString("MODEL"));
             phone.setPrice(resultSet.getBigDecimal("PRICE"));
             phone.setImageUrl(resultSet.getString("IMAGEURL"));
-            phone.setDescription(resultSet.getString("DESCRIPTION"));
-            Set<Color> colors = new HashSet<>(colorDao.getColors(phone.getId()));
+            phone.setDisplaySizeInches(resultSet.getBigDecimal("DISPLAYSIZEINCHES"));
+            List<Color> colorList = colorDao.getColors(phone.getId());
+            Set<Color> colors;
+            if (colorList == null) {
+                colors = null;
+            } else {
+                colors = new HashSet<>(colorList);
+            }
             phone.setColors(colors);
-
             phones.add(phone);
         }
 

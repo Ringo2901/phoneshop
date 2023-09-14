@@ -101,7 +101,7 @@ public class JdbcPhoneDaoTest {
         savingPhone.setPrice(BigDecimal.TEN);
         savingPhone.setBrand("ZTE");
         savingPhone.setImageUrl("xxx.jpg");
-        savingPhone.getColors().add(new Color(1001L, "White"));
+        savingPhone.setColors(null);
 
         jdbcPhoneDao.save(savingPhone);
         Phone foundPhoneAfterSaving = jdbcPhoneDao.get(1002L).get();
