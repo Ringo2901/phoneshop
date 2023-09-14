@@ -1,4 +1,4 @@
-import com.es.core.model.phone.Color;
+import com.es.core.model.phone.color.Color;
 import com.es.core.model.phone.JdbcPhoneDao;
 import com.es.core.model.phone.Phone;
 import org.junit.After;
@@ -51,13 +51,13 @@ public class JdbcPhoneDaoTest {
 
     @Test
     public void notEmptyDataBaseWhenPhoneDaoTestFindAll() {
-        assertFalse(jdbcPhoneDao.findAll(0, 5).isEmpty());
+              assertFalse(jdbcPhoneDao.findAll(0,5, null,null,null).isEmpty());
     }
 
     @Test
     public void emptyDataBaseWhenPhoneDaoTestFindAll() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "colors", "phones");
-        assertTrue(jdbcPhoneDao.findAll(0, 5).isEmpty());
+        assertTrue(jdbcPhoneDao.findAll(0, 5,null,null,null).isEmpty());
     }
 
     @Test

@@ -35,6 +35,21 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.jwebmp.jre11.jackson.core/jackson-core -->
+    <dependency>
+      <groupId>com.jwebmp.jre11.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>0.63.0.19</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.jwebmp.jre11.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>com.jwebmp.jre11.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>0.63.0.19</version>
+    </dependency>
+
+
 
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -1,28 +1,73 @@
 package com.es.core.cart;
 
+import com.es.core.model.phone.PhoneDao;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class HttpSessionCartService implements CartService {
+    @Resource
+    private Cart cart;
+    @Resource
+    private PhoneDao phoneDao;
+
     @Override
     public Cart getCart() {
-        throw new UnsupportedOperationException("TODO");
+        return cart;
     }
 
     @Override
     public void addPhone(Long phoneId, Long quantity) {
-        throw new UnsupportedOperationException("TODO");
+        CartItem item = cart.findItemById(phoneId).orElse(null);
+        if (item == null) {
+            item = new CartItem();
+            item.setPhone(phoneDao.get(phoneId).orElse(null));
+            item.setQuantity(quantity);
+            cart.getItems().add(item);
+        } else {
+            item.setQuantity(item.getQuantity() + quantity);
+        }
+        recalculateCart(cart);
     }
 
     @Override
     public void update(Map<Long, Long> items) {
+        recalculateCart(cart);
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public void remove(Long phoneId) {
+        recalculateCart(cart);
         throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    public long getTotalQuantity() {
+        return cart.getTotalQuantity();
+    }
+
+    @Override
+    public BigDecimal getTotalCost() {
+        return cart.getTotalCost();
+    }
+
+    private void recalculateCart(Cart cart) {
+        cart.setTotalQuantity(cart.getItems().stream()
+                .map(CartItem::getQuantity)
+                .collect(Collectors.summingLong(q -> q.longValue()))
+        );
+
+        cart.setTotalCost(cart.getItems().stream()
+                .map(item -> {
+                    if (item.getPhone().getPrice() == null)
+                        return BigDecimal.ZERO;
+                    else return item.getPhone().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 }
