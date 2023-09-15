@@ -19,7 +19,7 @@ public class AjaxCartController {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public CartAddDto addPhone(@RequestBody @Valid CartItemDto cartItem,
+    public CartAddDto addPhone(@Valid @RequestBody CartItemDto cartItem,
                                BindingResult bindingResult) {
         CartAddDto message = new CartAddDto();
         if (!bindingResult.hasErrors()) {

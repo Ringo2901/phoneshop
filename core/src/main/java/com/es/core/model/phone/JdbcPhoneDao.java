@@ -3,6 +3,7 @@ package com.es.core.model.phone;
 import com.es.core.enums.SortField;
 import com.es.core.enums.SortOrder;
 import com.es.core.model.phone.color.Color;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private PhonesExtractor phonesExtractor;
     private final String SELECT_PHONE_BY_ID = "SELECT * FROM phones WHERE id = ?";
 
     private final String SELECT_PHONE_WITH_CLR_BY_ID = "SELECT phone.*, colors.id AS colorId, colors.code AS colorCode FROM " +
@@ -22,9 +25,12 @@ public class JdbcPhoneDao implements PhoneDao {
             "ON phone.id = phone2color.phoneId" +
             " LEFT JOIN colors ON phone2color.colorId = colors.id";
     ;
-    private static final String SIMPLE_FIND_ALL_QUERY = "select ph.* " +
-            "from (select PHONES.* from PHONES " +
-            "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 offset ? limit ?) ph";
+    private static final String SIMPLE_FIND_ALL_QUERY = "SELECT ph.* " +
+            "FROM (SELECT phones.* FROM phones " +
+            "JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 offset ? limit ?) ph";
+    private static final String FIND_WITHOUT_OFFSET_AND_LIMIT = "SELECT ph.* " +
+            "FROM (SELECT phones.* FROM phones " +
+            "JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 ";
     private static final String NUMBER_OF_PHONES_QUERY = "SELECT count(*) FROM PHONES JOIN STOCKS ON PHONES.ID = STOCKS.PHONEID WHERE STOCKS.STOCK - STOCKS.RESERVED > 0";
     private static final String INSERT_PHONE = "INSERT INTO phones (brand, model, price, imageUrl) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_PHONE = "UPDATE phones SET brand = ?, model = ?, price = ?, imageUrl = ? WHERE id = ?";
@@ -33,7 +39,7 @@ public class JdbcPhoneDao implements PhoneDao {
 
 
     public Optional<Phone> get(final Long key) {
-        return jdbcTemplate.query(SELECT_PHONE_WITH_CLR_BY_ID, new Object[]{key}, new PhonesExtractor()).stream().findAny();
+        return jdbcTemplate.query(SELECT_PHONE_WITH_CLR_BY_ID, new Object[]{key}, phonesExtractor).stream().findAny();
     }
 
     @Transactional
@@ -76,13 +82,12 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public List<Phone> findAll(int offset, int limit, SortField sortField, SortOrder sortOrder, String query) {
-        return jdbcTemplate.query(makeFindAllSQL(sortField, sortOrder, query), new PhonesExtractor(), offset, limit);
+        return jdbcTemplate.query(makeFindAllSQL(sortField, sortOrder, query), phonesExtractor, offset, limit);
     }
 
     private String makeFindAllSQL(SortField sortField, SortOrder sortOrder, String query) {
         if (sortField != null || query != null && !query.equals("")) {
-            String sql = "SELECT ph.* from (select PHONES.* from PHONES " +
-                    "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 ";
+            String sql = FIND_WITHOUT_OFFSET_AND_LIMIT;
 
             if (query != null && !query.equals("")) {
                 sql += "AND (" +

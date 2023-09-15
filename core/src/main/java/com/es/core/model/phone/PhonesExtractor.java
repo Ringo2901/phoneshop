@@ -4,6 +4,7 @@ import com.es.core.model.phone.color.Color;
 import com.es.core.model.phone.color.ColorDao;
 import com.es.core.model.phone.color.ColorExtractor;
 import com.es.core.model.phone.color.JdbcColorDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ import java.util.Set;
 
 @Component
 public class PhonesExtractor implements ResultSetExtractor<List<Phone>> {
-    private ColorDao colorDao = new JdbcColorDao(new ColorExtractor());
+    @Autowired
+    private ColorDao colorDao;
 
     @Override
     public List<Phone> extractData(ResultSet resultSet) throws SQLException, DataAccessException {

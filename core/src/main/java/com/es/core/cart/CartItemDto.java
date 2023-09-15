@@ -2,6 +2,7 @@ package com.es.core.cart;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
 public class CartItemDto {
     @NotNull
