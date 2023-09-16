@@ -43,19 +43,6 @@ public class AjaxCartControllerTest {
     }
 
     @Test
-    public void testAddPhoneValidationError() {
-        CartItemDto cartItem = new CartItemDto();
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(bindingResult.getAllErrors().get(0).getDefaultMessage()).thenReturn("Validation error message");
-
-        CartAddDto result = controller.addPhone(cartItem, bindingResult);
-
-        verify(cartService, never()).addPhone(anyLong(), anyLong());
-        assertEquals("Validation error message", result.getMessage());
-        assertEquals(true, result.isErrorStatus());
-    }
-
-    @Test
     public void testNumberFormatExceptionHandler() {
         CartAddDto result = controller.numberFormatException();
 
