@@ -5,11 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
 public class CartItemDto {
-    @NotNull
     private Long phoneId;
-    @NotNull(message = "Quantity is empty")
-    @Min(value = 1, message = "Quantity must be more then 0")
-    private Long quantity;
+    private String quantity;
 
     public Long getPhoneId() {
         return phoneId;
@@ -19,11 +16,11 @@ public class CartItemDto {
         this.phoneId = phoneId;
     }
 
-    public Long getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Long quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 }

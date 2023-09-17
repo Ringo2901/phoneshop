@@ -4,6 +4,7 @@ import com.es.core.model.phone.PhoneDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,17 +12,25 @@ import java.util.stream.Collectors;
 @Service
 public class HttpSessionCartService implements CartService {
     @Resource
-    private Cart cart;
+    private HttpSession httpSession;
     @Resource
     private PhoneDao phoneDao;
 
+    private static final String CART_SESSION_ATTRIBUTE = "cart";
+
     @Override
     public Cart getCart() {
+        Cart cart = (Cart) httpSession.getAttribute(CART_SESSION_ATTRIBUTE);
+        if (cart == null) {
+            cart = new Cart();
+            httpSession.setAttribute(CART_SESSION_ATTRIBUTE, cart);
+        }
         return cart;
     }
 
     @Override
     public void addPhone(Long phoneId, Long quantity) {
+        Cart cart = getCart();
         CartItem item = cart.findItemById(phoneId).orElse(null);
         if (item == null) {
             item = new CartItem();
@@ -36,23 +45,27 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void update(Map<Long, Long> items) {
+        Cart cart = getCart();
         recalculateCart(cart);
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public void remove(Long phoneId) {
+        Cart cart = getCart();
         recalculateCart(cart);
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public long getTotalQuantity() {
+        Cart cart = getCart();
         return cart.getTotalQuantity();
     }
 
     @Override
     public BigDecimal getTotalCost() {
+        Cart cart = getCart();
         return cart.getTotalCost();
     }
 

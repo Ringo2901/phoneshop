@@ -71,14 +71,4 @@ public class ProductListPageControllerTest {
         verify(model).addAttribute("numberOfPages", 1L);
         assertEquals("productList", viewName);
     }
-
-    @Test
-    public void testCartOnPage() {
-        Cart cart = new Cart();
-        when(cartService.getCart()).thenReturn(cart);
-
-        Cart resultCart = controller.cartOnPage();
-
-        assertEquals(cart, resultCart);
-    }
 }

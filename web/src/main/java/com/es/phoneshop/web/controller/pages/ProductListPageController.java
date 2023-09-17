@@ -38,11 +38,8 @@ public class ProductListPageController {
         Long number = phoneDao.numberByQuery(query);
         model.addAttribute("numberOfPhones", number);
         model.addAttribute("numberOfPages", (number + PHONES_ON_PAGE - 1) / PHONES_ON_PAGE);
+        Cart cart = cartService.getCart();
+        model.addAttribute("cart", cart);
         return "productList";
-    }
-
-    @ModelAttribute("cart")
-    public Cart cartOnPage() {
-        return cartService.getCart();
     }
 }
