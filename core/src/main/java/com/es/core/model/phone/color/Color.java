@@ -1,4 +1,4 @@
-package com.es.core.model.phone;
+package com.es.core.model.phone.color;
 
 import java.util.Objects;
 

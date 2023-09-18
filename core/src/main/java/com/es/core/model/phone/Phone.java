@@ -1,5 +1,7 @@
 package com.es.core.model.phone;
 
+import com.es.core.model.phone.color.Color;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
