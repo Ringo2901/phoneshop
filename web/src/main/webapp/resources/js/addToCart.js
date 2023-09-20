@@ -1,43 +1,36 @@
-function addToCart(phoneId, quantity) {
+function addToCart(phoneId) {
     const quant = document.querySelector("#quantity" + phoneId);
-    const status = document.querySelector("#statusMessage" + phoneId);
-    const message = document.createElement('div');
-    const messageHead = document.createElement('div');
-    const messageBody = document.createElement('div');
+    const quantityErrorStatus = document.querySelector("#statusMessage" + phoneId);
+    const message = document.querySelector("#statusMessage");
+    const messageHead = document.querySelector("#statusMessageHead");
+    const messageBody = document.querySelector("#statusMessageBody");
     $.ajax({
         type: "POST",
-        url: "ajaxCart",
-        data: JSON.stringify({phoneId, quantity: quant.value}),
+        url: contextPath + "/ajaxCart",
+        data: JSON.stringify({phoneId, quantity : quant.value}),
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
             if (data.errorStatus == false) {
-                message.style.color = "green"
                 message.className = "panel panel-success";
                 messageHead.innerText = "Success";
-                status.innerHTML = "";
-            } else {
-                message.style.color = "red"
+                quantityErrorStatus.innerHTML = "";
+            }
+            else {
                 message.className = "panel panel-danger";
                 messageHead.innerText = "Error";
-                status.innerHTML = data.message;
+                quantityErrorStatus.innerHTML = data.message;
             }
-            messageHead.className = "panel-heading";
-            messageBody.className = "panel-body";
             messageBody.innerText = data.message;
             $("#cartTotalQuantity").text(data.totalQuantity);
             $("#cartTotalCost").text(data.totalCost);
         },
         error: function (data) {
-            message.style.color = "red"
             message.className = "panel panel-danger";
             messageHead.innerText = "Error";
-            status.innerHTML = "There was an error";
-            messageHead.className = "panel-heading";
-            messageBody.className = "panel-body";
+            quantityErrorStatus.innerHTML = "There was an error";
             messageBody.innerText = "There was an error";
         }
     });
-    message.append(messageHead, messageBody);
-    document.querySelector('#statusMessage').replaceChildren(message);
+    message.hidden = false;
 }

@@ -16,57 +16,49 @@ import java.util.Optional;
 public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private JdbcTemplate jdbcTemplate;
-    @Autowired
+    @Resource
     private PhonesExtractor phonesExtractor;
-    private final String SELECT_PHONE_BY_ID = "SELECT * FROM phones WHERE id = ?";
 
-    private final String SELECT_PHONE_WITH_CLR_BY_ID = "SELECT phone.*, colors.id AS colorId, colors.code AS colorCode FROM " +
-            "(" + SELECT_PHONE_BY_ID + ") AS phone LEFT JOIN phone2color " +
-            "ON phone.id = phone2color.phoneId" +
-            " LEFT JOIN colors ON phone2color.colorId = colors.id";
-    ;
-    private static final String SIMPLE_FIND_ALL_QUERY = "SELECT ph.* " +
-            "FROM (SELECT phones.* FROM phones " +
-            "JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 offset ? limit ?) ph";
+    private static final String GET_QUERY = "SELECT ph.*, colors.code AS color " +
+            "FROM (SELECT phones.* FROM phones WHERE phones.id = ?) AS ph " +
+            "LEFT JOIN phone2color ON ph.id = phone2color.phoneId " +
+            "LEFT JOIN colors ON phone2color.colorId = colors.id";
+    private static final String SAVE_INSERT_QUERY = "INSERT INTO phones (Id, Brand, Model, Price, DisplaySizeInches, " +
+            "WeightGr, LengthMm, WidthMm, HeightMm, Announced, DeviceType, Os, DisplayResolution, PixelDensity, " +
+            "DisplayTechnology, BackCameraMegapixels, FrontCameraMegapixels, RamGb, InternalStorageGb, BatteryCapacityMah, " +
+            "TalkTimeHours, StandByTimeHours, Bluetooth, Positioning, ImageUrl, Description) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SIMPLE_FIND_ALL_QUERY = "select ph.* " +
+            "from (select PHONES.* from PHONES " +
+            "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 offset ? limit ?) ph";
     private static final String FIND_WITHOUT_OFFSET_AND_LIMIT = "SELECT ph.* " +
             "FROM (SELECT phones.* FROM phones " +
             "JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 ";
     private static final String NUMBER_OF_PHONES_QUERY = "SELECT count(*) FROM PHONES JOIN STOCKS ON PHONES.ID = STOCKS.PHONEID WHERE STOCKS.STOCK - STOCKS.RESERVED > 0";
-    private static final String INSERT_PHONE = "INSERT INTO phones (brand, model, price, imageUrl) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_PHONE = "UPDATE phones SET brand = ?, model = ?, price = ?, imageUrl = ? WHERE id = ?";
-    private static final String DELETE_COLORS = "DELETE FROM phone2color WHERE phoneId = ?";
-    private static final String INSERT_COLORS = "INSERT INTO phone2color (phoneId, colorId) VALUES (?, ?)";
+    private static final String SELECT_COLOR_BY_CODE_QUERY = "SELECT colors.id FROM colors WHERE colors.code = ?";
+    private static final String INSERT_NEW_COLOR_DEPENDENCE_QUERY = "INSERT INTO phone2color (phoneId, colorId) VALUES (?, ?)";
 
-
+    @Override
     public Optional<Phone> get(final Long key) {
-        return jdbcTemplate.query(SELECT_PHONE_WITH_CLR_BY_ID, new Object[]{key}, phonesExtractor).stream().findAny();
+        return jdbcTemplate.query(GET_QUERY, phonesExtractor, key).stream().findAny();
     }
 
-    @Transactional
+    @Override
     public void save(final Phone phone) {
-        if (phone.getId() == null) {
-            insertPhone(phone);
-        } else {
-            updatePhone(phone);
-        }
-        updatePhoneColors(phone);
-    }
+        jdbcTemplate.update(SAVE_INSERT_QUERY,
+                phone.getId(), phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getDisplaySizeInches(),
+                phone.getWeightGr(), phone.getLengthMm(), phone.getWidthMm(), phone.getHeightMm(),
+                phone.getAnnounced(), phone.getDeviceType(), phone.getOs(), phone.getDisplayResolution(),
+                phone.getPixelDensity(), phone.getDisplayTechnology(), phone.getBackCameraMegapixels(),
+                phone.getFrontCameraMegapixels(), phone.getRamGb(), phone.getInternalStorageGb(),
+                phone.getBatteryCapacityMah(), phone.getTalkTimeHours(), phone.getStandByTimeHours(),
+                phone.getBluetooth(), phone.getPositioning(), phone.getImageUrl(), phone.getDescription());
 
-    private void insertPhone(Phone phone) {
-        jdbcTemplate.update(INSERT_PHONE, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getImageUrl());
-    }
-
-    private void updatePhone(Phone phone) {
-        jdbcTemplate.update(UPDATE_PHONE, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getImageUrl(), phone.getId());
-    }
-
-    private void updatePhoneColors(Phone phone) {
-        jdbcTemplate.update(DELETE_COLORS, phone.getId());
-        if (phone.getColors() != null) {
-            for (Color color : phone.getColors()) {
-                jdbcTemplate.update(INSERT_COLORS, phone.getId(), color.getId());
-            }
-        }
+        phone.getColors().stream()
+                .forEach(color -> {
+                    Long colorId = jdbcTemplate.queryForObject(SELECT_COLOR_BY_CODE_QUERY, Long.class, color.getCode());
+                    jdbcTemplate.update(INSERT_NEW_COLOR_DEPENDENCE_QUERY, phone.getId(), colorId);
+                });
     }
 
     @Override
@@ -97,6 +89,7 @@ public class JdbcPhoneDao implements PhoneDao {
                         "OR LOWER(PHONES.MODEL) LIKE LOWER('% " + query + "%')" +
                         ") ";
             }
+
             if (sortField != null) {
                 sql += "ORDER BY " + sortField.name() + " ";
                 if (sortOrder != null) {

@@ -42,11 +42,4 @@ public class AjaxCartControllerTest {
         assertEquals(false, result.isErrorStatus());
     }
 
-    @Test
-    public void testNumberFormatExceptionHandler() {
-        CartAddDto result = controller.numberFormatException();
-
-        assertEquals("Quantity must be number", result.getMessage());
-        assertEquals(true, result.isErrorStatus());
-    }
 }

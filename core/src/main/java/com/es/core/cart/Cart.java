@@ -1,6 +1,7 @@
 package com.es.core.cart;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.SessionScope;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@SessionScope
 public class Cart {
     private List<CartItem> items = new ArrayList<CartItem>();
     private long totalQuantity;
