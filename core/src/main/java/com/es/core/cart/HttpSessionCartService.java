@@ -6,6 +6,7 @@ import com.es.core.order.OutOfStockException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,19 +14,26 @@ import java.util.stream.Collectors;
 @Service
 public class HttpSessionCartService implements CartService {
     @Resource
-    private Cart cart;
+    private HttpSession httpSession;
     @Resource
     private PhoneDao phoneDao;
     @Resource
     private StockDao stockDao;
+    private static final String CART_SESSION_ATTRIBUTE = "cart";
 
     @Override
     public Cart getCart() {
+        Cart cart = (Cart) httpSession.getAttribute(CART_SESSION_ATTRIBUTE);
+        if (cart == null) {
+            cart = new Cart();
+            httpSession.setAttribute(CART_SESSION_ATTRIBUTE, cart);
+        }
         return cart;
     }
 
     @Override
     public void addPhone(Long phoneId, Long quantity) throws OutOfStockException {
+        Cart cart = getCart();
         CartItem item = cart.findItemById(phoneId).orElse(null);
         Long stock = stockDao.availableStock(phoneId).longValue();
         if (item == null) {
@@ -44,25 +52,36 @@ public class HttpSessionCartService implements CartService {
     }
 
     @Override
-    public void update(Map<Long, Long> items) {
-        cart.getItems().stream().forEach(item -> item.setQuantity(items.get(item.getPhone().getId())));
+    public void update(Map<Long, Long> items) throws OutOfStockException {
+        Cart cart = getCart();
+        for (CartItem item : cart.getItems()) {
+            Long phoneId = item.getPhone().getId();
+            Long quantity = items.get(phoneId);
+            Long stock = stockDao.availableStock(phoneId).longValue();
+            if (stock - quantity < 0) {
+                throw new OutOfStockException("Available " + stock);
+            }
+            item.setQuantity(quantity);
+        }
         recalculateCart(cart);
     }
 
+
     @Override
     public void remove(Long phoneId) {
+        Cart cart = getCart();
         cart.getItems().removeIf(item -> phoneId.equals(item.getPhone().getId()));
         recalculateCart(cart);
     }
 
     @Override
     public long getTotalQuantity() {
-        return cart.getTotalQuantity();
+        return getCart().getTotalQuantity();
     }
 
     @Override
     public BigDecimal getTotalCost() {
-        return cart.getTotalCost();
+        return getCart().getTotalCost();
     }
 
     private void recalculateCart(Cart cart) {

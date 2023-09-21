@@ -1,5 +1,7 @@
 package com.es.core.cart;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -9,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@SessionScope
+//@SessionScope
+//@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
 public class Cart {
     private List<CartItem> items = new ArrayList<CartItem>();
     private long totalQuantity;

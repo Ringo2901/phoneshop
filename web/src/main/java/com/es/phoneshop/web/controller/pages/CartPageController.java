@@ -3,6 +3,7 @@ package com.es.phoneshop.web.controller.pages;
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartItemsUpdateDto;
 import com.es.core.cart.CartService;
+import com.es.core.order.OutOfStockException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,7 @@ public class CartPageController {
     private CartService cartService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getCart(@ModelAttribute("cartItemsQuantities") CartItemsUpdateDto dto, Model model) {
+    public String getCart(@ModelAttribute("cartItemsQuantities") CartItemsUpdateDto dto) {
         dto.copyFromCart(cartService.getCart());
         return "cart";
     }
@@ -34,9 +35,15 @@ public class CartPageController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "There was some errors while updating");
         } else {
-            cartService.update(makeUpdateMap(dto));
-            dto.copyFromCart(cartService.getCart());
-            model.addAttribute("successMessage", "Cart successfully updated");
+            try {
+                cartService.update(makeUpdateMap(dto));
+                dto.copyFromCart(cartService.getCart());
+                model.addAttribute("successMessage", "Cart successfully updated");
+            } catch (OutOfStockException e) {
+                model.addAttribute("errorMessage", "Out of stock error: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                model.addAttribute("errorMessage", "Invalid number format: " + e.getMessage());
+            }
         }
         return "cart";
     }

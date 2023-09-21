@@ -17,7 +17,7 @@
   <c:if test="${not empty errorMessage}">
     <div class="container">
       <div class="panel panel-danger">
-        <div class="panel-heading">Success</div>
+        <div class="panel-heading">Error</div>
         <div class="panel-body">${errorMessage}</div>
       </div>
     </div>
@@ -71,12 +71,8 @@
             <td class="align-middle">$ ${cart.items[i].phone.price}</td>
             <td class="align-middle">
               <frm:input path="items[${i}].quantity"/>
-              <p class="text-danger">
-                <frm:errors path="items[${i}].quantity"/>
-                <frm:errors path="items[${i}]"/>
-              </p>
               <frm:hidden path="items[${i}].phoneId"/>
-              <p class="text-danger" id="statusMessage${cart.items[i].phone.id}"></p>
+              <p class="text-danger" id="statusMessage" >${errorMessage}</p>
             </td>
             <td class="align-middle">
               <button form="deleteCartItem" class="btn btn-outline-dark border-dark"

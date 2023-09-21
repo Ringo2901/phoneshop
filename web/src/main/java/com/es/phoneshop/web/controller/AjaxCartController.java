@@ -37,18 +37,6 @@ public class AjaxCartController {
         return message;
     }
 
-    @RequestMapping(path = "/delete", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public CartAddDto deletePhone(@RequestParam("phoneId") Long phoneId) {
-        CartAddDto message = new CartAddDto();
-        cartService.remove(phoneId);
-        message.setErrorStatus(false);
-        message.setMessage("Successfully deleted from cart");
-        message.setTotalCost(cartService.getTotalCost());
-        message.setTotalQuantity(cartService.getTotalQuantity());
-        return message;
-    }
-
 
     @ExceptionHandler(InvalidFormatException.class)
     @ResponseBody
