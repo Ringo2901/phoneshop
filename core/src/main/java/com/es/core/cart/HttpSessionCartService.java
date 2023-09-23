@@ -84,7 +84,7 @@ public class HttpSessionCartService implements CartService {
         return getCart().getTotalCost();
     }
 
-    private void recalculateCart(Cart cart) {
+    public void recalculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getItems().stream()
                 .map(CartItem::getQuantity)
                 .collect(Collectors.summingLong(q -> q.longValue()))
@@ -97,5 +97,9 @@ public class HttpSessionCartService implements CartService {
                     else return item.getPhone().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+
+    public void setHttpSession(HttpSession httpSession) {
+        this.httpSession = httpSession;
     }
 }
