@@ -1,6 +1,7 @@
 package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.Cart;
+import com.es.core.cart.CartItemDto;
 import com.es.core.cart.CartItemsUpdateDto;
 import com.es.core.cart.CartService;
 import com.es.core.order.OutOfStockException;
@@ -14,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/cart")
@@ -29,24 +29,70 @@ public class CartPageController {
         return "cart";
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+   /* @RequestMapping(method = RequestMethod.PUT)
     public String updateCart(@ModelAttribute("cartItemsQuantities") @Valid CartItemsUpdateDto dto,
                              BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "There was some errors while updating");
-        } else {
-            try {
-                cartService.update(makeUpdateMap(dto));
-                dto.copyFromCart(cartService.getCart());
+        }
+                for (CartItemDto cartItem : dto.getItems()) {
+                    try {
+                        cartService.update(Collections.singletonMap(cartItem.getPhoneId(), cartItem.getQuantity()));
+
+                    } catch (OutOfStockException e) {
+                        model.addAttribute("phoneError_" + cartItem.getPhoneId(), "Out of stock error: " + e.getMessage());
+                    } catch (NumberFormatException e) {
+                        model.addAttribute("phoneError_" + cartItem.getPhoneId(), "Invalid number format: " + e.getMessage());
+                    }
+                }
                 model.addAttribute("successMessage", "Cart successfully updated");
-            } catch (OutOfStockException e) {
-                model.addAttribute("errorMessage", "Out of stock error: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                model.addAttribute("errorMessage", "Invalid number format: " + e.getMessage());
+        dto.copyFromCart(cartService.getCart());
+        return "cart";
+    }*/
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public String updateCart(@ModelAttribute("cartItemsQuantities") @Valid CartItemsUpdateDto dto,
+                             BindingResult bindingResult, Model model) {
+        List<String> validationErrors = new ArrayList<>(Collections.nCopies(dto.getItems().size(), null));
+        ;
+        List<String> outOfStockErrors = new ArrayList<>(Collections.nCopies(dto.getItems().size(), null));
+        ;
+        boolean hasErrors = false;
+        int i = 0;
+        if (bindingResult.hasErrors()) {
+            for (CartItemDto cartItemDto : dto.getItems()) {
+                if (bindingResult.hasFieldErrors("items[" + i + "].quantity")) {
+                    validationErrors.set(i, bindingResult.getFieldError("items[" + i + "].quantity").getDefaultMessage());
+                    hasErrors = true;
+                }
+                i++;
             }
         }
+        i = 0;
+        for (CartItemDto cartItem : dto.getItems()) {
+            if (validationErrors.get(i) == null) {
+                try {
+                    cartService.update(cartItem.getPhoneId(), cartItem.getQuantity());
+                } catch (OutOfStockException e) {
+                    outOfStockErrors.set(i, "Out of stock error - " + e.getMessage());
+                    hasErrors = true;
+                }
+            }
+            i++;
+        }
+        dto.copyFromCart(cartService.getCart());
+        model.addAttribute("validationErrors", validationErrors);
+        model.addAttribute("outOfStockErrors", outOfStockErrors);
+
+        if (hasErrors) {
+            model.addAttribute("errorMessage", "There was some errors during updating");
+        } else {
+            model.addAttribute("successMessage", "Cart successfully updated");
+        }
+
         return "cart";
     }
+
 
     @RequestMapping(method = RequestMethod.DELETE)
     public String deleteFromCart(@RequestParam("phoneId") Long phoneId, Model model) {
@@ -61,15 +107,5 @@ public class CartPageController {
     @ModelAttribute("cart")
     public Cart cartAttribute() {
         return cartService.getCart();
-    }
-
-    private Map<Long, Long> makeUpdateMap(CartItemsUpdateDto dto) {
-        Map<Long, Long> map = new HashMap<Long, Long>();
-        dto.getItems().stream().forEach(item -> {
-            if (item.getPhoneId() != null && item.getQuantity() != null) {
-                map.put(item.getPhoneId(), item.getQuantity());
-            }
-        });
-        return map;
     }
 }

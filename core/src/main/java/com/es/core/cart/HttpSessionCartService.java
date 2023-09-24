@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,31 +39,29 @@ public class HttpSessionCartService implements CartService {
         Long stock = stockDao.availableStock(phoneId).longValue();
         if (item == null) {
             if (stock - quantity < 0)
-                throw new OutOfStockException("Available " + stock);
+                throw new OutOfStockException("Available " + stock, phoneId);
             item = new CartItem();
             item.setPhone(phoneDao.get(phoneId).orElse(null));
             item.setQuantity(quantity);
             cart.getItems().add(item);
         } else {
             if (stock - (quantity + item.getQuantity()) < 0)
-                throw new OutOfStockException("Available " + (stock - item.getQuantity()));
+                throw new OutOfStockException("Available " + (stock - item.getQuantity()), phoneId);
             item.setQuantity(item.getQuantity() + quantity);
         }
         recalculateCart(cart);
     }
 
     @Override
-    public void update(Map<Long, Long> items) throws OutOfStockException {
+    public void update(Long phoneId, Long phoneQuantity) throws OutOfStockException {
         Cart cart = getCart();
-        for (CartItem item : cart.getItems()) {
-            Long phoneId = item.getPhone().getId();
-            Long quantity = items.get(phoneId);
-            Long stock = stockDao.availableStock(phoneId).longValue();
-            if (stock - quantity < 0) {
-                throw new OutOfStockException("Available " + stock);
-            }
-            item.setQuantity(quantity);
+        Long stock = stockDao.availableStock(phoneId).longValue();
+        if (stock - phoneQuantity < 0) {
+            throw new OutOfStockException("Available " + stock, phoneId);
         }
+        cart.getItems().stream()
+                .filter(item -> Objects.equals(item.getPhone().getId(), phoneId))
+                .forEach(item -> item.setQuantity(phoneQuantity));
         recalculateCart(cart);
     }
 

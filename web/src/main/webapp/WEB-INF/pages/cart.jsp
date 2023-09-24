@@ -31,60 +31,65 @@
 
     <div class="col-8">
       <c:if test="${cart.items.size() > 0}">
-      <frm:form method="put" modelAttribute="cartItemsQuantities" action="${pageContext.servletContext.contextPath}/cart">
-      <table class="table table-hover table-bordered text-center">
-        <thead>
-          <tr class="bg-light">
-            <td>
-              Brand
-            </td>
-            <td>
-              Model
-            </td>
-            <td>Color</td>
-            <td>
-              Display size
-            </td>
-            <td>
-              Price
-            </td>
-            <td>Quantity</td>
-            <td>Action</td>
-          </tr>
-        </thead>
-        <c:forEach var="i" begin="0" end="${cart.items.size() - 1}">
-          <tr id="row${cart.items[i].phone.id}">
-            <td class="align-middle">
-              <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${cart.items[i].phone.brand}</a>
-            </td>
-            <td class="align-middle">
-              <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${cart.items[i].phone.model}</a>
-            </td>
-            <td class="align-middle">
-              <ul>
-                <c:forEach var="color" items="${cart.items[i].phone.colors}">
-                  <li>${color.code}</li>
-                </c:forEach>
-              </ul>
-            </td>
-            <td class="align-middle">${cart.items[i].phone.displaySizeInches}"</td>
-            <td class="align-middle">$ ${cart.items[i].phone.price}</td>
-            <td class="align-middle">
-              <frm:input path="items[${i}].quantity"/>
-              <frm:hidden path="items[${i}].phoneId"/>
-              <p class="text-danger" id="statusMessage" >${errorMessage}</p>
-            </td>
-            <td class="align-middle">
-              <button form="deleteCartItem" class="btn btn-outline-dark border-dark"
-              formaction="<c:url value="/cart?phoneId=${cart.items[i].phone.id}"/>">Delete</button>
-            </td>
-          </tr>
-        </c:forEach>
-      </table>
-        <p>
-          <button class="btn btn-lg btn-outline-light text-dark border-dark float-right" type="submit">Update</button>
-        </p>
-      </frm:form>
+        <frm:form method="put" modelAttribute="cartItemsQuantities" action="${pageContext.servletContext.contextPath}/cart">
+          <table class="table table-hover table-bordered text-center">
+            <thead>
+            <tr class="bg-light">
+              <td>
+                Brand
+              </td>
+              <td>
+                Model
+              </td>
+              <td>Color</td>
+              <td>
+                Display size
+              </td>
+              <td>
+                Price
+              </td>
+              <td>Quantity</td>
+              <td>Action</td>
+            </tr>
+            </thead>
+            <c:forEach var="i" begin="0" end="${cart.items.size() - 1}">
+              <tr id="row${cart.items[i].phone.id}">
+                <td class="align-middle">
+                  <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${cart.items[i].phone.brand}</a>
+                </td>
+                <td class="align-middle">
+                  <a href="<c:url value="/productDetails/${cart.items[i].phone.id}"/>">${cart.items[i].phone.model}</a>
+                </td>
+                <td class="align-middle">
+                  <ul>
+                    <c:forEach var="color" items="${cart.items[i].phone.colors}">
+                      <li>${color.code}</li>
+                    </c:forEach>
+                  </ul>
+                </td>
+                <td class="align-middle">${cart.items[i].phone.displaySizeInches}"</td>
+                <td class="align-middle">$ ${cart.items[i].phone.price}</td>
+                <td class="align-middle">
+                  <frm:input path="items[${i}].quantity"/>
+                  <frm:hidden path="items[${i}].phoneId"/>
+                  <c:if test="${not empty validationErrors[i]}">
+                    <p class="text-danger">${validationErrors[i]}</p>
+                  </c:if>
+                  <c:if test="${not empty outOfStockErrors[i]}">
+                    <p class="text-danger">${outOfStockErrors[i]}</p>
+                  </c:if>
+                </td>
+                <td class="align-middle">
+                  <button form="deleteCartItem" class="btn btn-outline-dark border-dark"
+                          formaction="<c:url value="/cart?phoneId=${cart.items[i].phone.id}"/>">Delete</button>
+                </td>
+              </tr>
+            </c:forEach>
+          </table>
+          <p>
+            <button class="btn btn-lg btn-outline-light text-dark border-dark float-right" type="submit">Update</button>
+          </p>
+        </frm:form>
         <form id="deleteCartItem" method="post">
           <input type="hidden" name="_method" value="delete">
         </form>

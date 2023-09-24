@@ -96,11 +96,9 @@ public class HttpSessionCartServiceTest {
         cartItem.setPhone(new Phone(1L, null, null, null, null));
         cartItem.setQuantity(1L);
         cart.getItems().add(cartItem);
-        Map<Long, Long> itemsToUpdate = new HashMap<>();
-        itemsToUpdate.put(phoneId, newQuantity);
         when(stockDao.availableStock(phoneId)).thenReturn(Math.toIntExact(newQuantity));
 
-        cartService.update(itemsToUpdate);
+        cartService.update(phoneId, newQuantity);
 
         assertEquals(1, cart.getItems().size());
         assertEquals(newQuantity, cart.getItems().get(0).getQuantity());
@@ -115,11 +113,9 @@ public class HttpSessionCartServiceTest {
         cartItem.setPhone(new Phone(1L, null, null, null, null));
         cartItem.setQuantity(1L);
         cart.getItems().add(cartItem);
-        Map<Long, Long> itemsToUpdate = new HashMap<>();
-        itemsToUpdate.put(phoneId, newQuantity);
         when(stockDao.availableStock(phoneId)).thenReturn(5);
 
-        assertThrows(OutOfStockException.class, () -> cartService.update(itemsToUpdate));
+        assertThrows(OutOfStockException.class, () -> cartService.update(phoneId, newQuantity));
 
         assertEquals(1, cart.getItems().size());
         assertEquals(Optional.of(1L), Optional.of(cart.getItems().get(0).getQuantity()));

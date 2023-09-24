@@ -52,7 +52,7 @@ public class CartPageControllerTest {
         String viewName = cartPageController.updateCart(cartItemsUpdateDto, mock(BindingResult.class), mock(Model.class));
 
         assertEquals("cart", viewName);
-        verify(cartService, times(1)).update(anyMap());
+        verify(cartService, times(1)).update(1L, 2L);
     }
 
     @Test
