@@ -29,27 +29,6 @@ public class CartPageController {
         return "cart";
     }
 
-   /* @RequestMapping(method = RequestMethod.PUT)
-    public String updateCart(@ModelAttribute("cartItemsQuantities") @Valid CartItemsUpdateDto dto,
-                             BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "There was some errors while updating");
-        }
-                for (CartItemDto cartItem : dto.getItems()) {
-                    try {
-                        cartService.update(Collections.singletonMap(cartItem.getPhoneId(), cartItem.getQuantity()));
-
-                    } catch (OutOfStockException e) {
-                        model.addAttribute("phoneError_" + cartItem.getPhoneId(), "Out of stock error: " + e.getMessage());
-                    } catch (NumberFormatException e) {
-                        model.addAttribute("phoneError_" + cartItem.getPhoneId(), "Invalid number format: " + e.getMessage());
-                    }
-                }
-                model.addAttribute("successMessage", "Cart successfully updated");
-        dto.copyFromCart(cartService.getCart());
-        return "cart";
-    }*/
-
     @RequestMapping(method = RequestMethod.PUT)
     public String updateCart(@ModelAttribute("cartItemsQuantities") @Valid CartItemsUpdateDto dto,
                              BindingResult bindingResult, Model model) {
