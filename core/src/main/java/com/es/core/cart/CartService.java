@@ -17,7 +17,7 @@ public interface CartService {
      * value: quantity
      */
     void update(Long phoneId, Long phoneQuantity);
-
+    void clear();
     void remove(Long phoneId);
     long getTotalQuantity();
 

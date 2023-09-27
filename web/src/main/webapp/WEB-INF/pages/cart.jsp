@@ -31,6 +31,9 @@
 
     <div class="col-8">
       <c:if test="${cart.items.size() > 0}">
+        <form action="<c:url value="/order"/>" method="get">
+          <button class="btn btn-lg btn-light float-right" type="submit">Order</button>
+        </form>
         <frm:form method="put" modelAttribute="cartItemsQuantities" action="${pageContext.servletContext.contextPath}/cart">
           <table class="table table-hover table-bordered text-center">
             <thead>
