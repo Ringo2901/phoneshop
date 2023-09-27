@@ -1,12 +1,24 @@
 package com.es.core.cart;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 
 public class CartItemDto {
     private Long phoneId;
-    private String quantity;
+    @NotNull(message = "Quantity was empty")
+    @Min(value = 1, message = "Quantity must be more then 0")
+    private Long quantity;
+
+    public CartItemDto() {
+    }
+
+    public CartItemDto(Long phoneId, Long quantity) {
+        this.phoneId = phoneId;
+        this.quantity = quantity;
+    }
 
     public Long getPhoneId() {
         return phoneId;
@@ -16,11 +28,11 @@ public class CartItemDto {
         this.phoneId = phoneId;
     }
 
-    public String getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Long quantity) {
         this.quantity = quantity;
     }
 }

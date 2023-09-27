@@ -1,6 +1,5 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="page" required="true" %>
 <%@ attribute name="lastPage" required="true" %>
 

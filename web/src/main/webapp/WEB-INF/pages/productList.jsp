@@ -4,7 +4,13 @@
 
 <tags:master pageTitle="Phohe List">
   <p></p>
-  <div id="statusMessage" class="container"><span></span></div>
+  <div class="container">
+    <div id="statusMessage" hidden>
+      <div id="statusMessageHead" class="panel-heading"></div>
+      <div id="statusMessageBody" class="panel-body"></div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="container">
       <div class="container">
@@ -24,38 +30,42 @@
     <div class="col-8">
       <table class="table table-hover table-bordered text-center">
         <thead>
-        <tr class="bg-light">
-          <td>Image</td>
-          <td>
-            Brand
-            <tags:sortLink sort="brand" order="asc"/><tags:sortLink sort="brand" order="desc"/>
-          </td>
-          <td>
-            Model
-            <tags:sortLink sort="model" order="asc"/><tags:sortLink sort="model" order="desc"/>
-          </td>
-          <td>Color</td>
-          <td>
-            Display size
-            <tags:sortLink sort="displaySizeInches" order="asc"/>
-            <tags:sortLink sort="displaySizeInches" order="desc"/>
-          </td>
-          <td>
-            Price
-            <tags:sortLink sort="price" order="asc"/>
-            <tags:sortLink sort="price" order="desc"/>
-          </td>
-          <td>Quantity</td>
-          <td>Action</td>
-        </tr>
+          <tr class="bg-light">
+            <td>Image</td>
+            <td>
+              Brand
+              <tags:sortLink sort="brand" order="asc"/><tags:sortLink sort="brand" order="desc"/>
+            </td>
+            <td>
+              Model
+              <tags:sortLink sort="model" order="asc"/><tags:sortLink sort="model" order="desc"/>
+            </td>
+            <td>Color</td>
+            <td>
+              Display size
+              <tags:sortLink sort="displaySizeInches" order="asc"/>
+              <tags:sortLink sort="displaySizeInches" order="desc"/>
+            </td>
+            <td>
+              Price
+              <tags:sortLink sort="price" order="asc"/>
+              <tags:sortLink sort="price" order="desc"/>
+            </td>
+            <td>Quantity</td>
+            <td>Action</td>
+          </tr>
         </thead>
         <c:forEach var="phone" items="${phones}">
           <tr>
             <td class="align-middle">
               <img class="rounded" src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
             </td>
-            <td class="align-middle">${phone.brand}</td>
-            <td class="align-middle">${phone.model}</td>
+            <td class="align-middle">
+              <a href="<c:url value="/productDetails/${phone.id}"/>">${phone.brand}</a>
+            </td>
+            <td class="align-middle">
+              <a href="<c:url value="/productDetails/${phone.id}"/>">${phone.model}</a>
+            </td>
             <td class="align-middle">
               <ul>
                 <c:forEach var="color" items="${phone.colors}">
@@ -70,7 +80,7 @@
               <p class="text-danger" id="statusMessage${phone.id}"></p>
             </td>
             <td class="align-middle">
-              <input id="add-to-cart" class="btn btn-outline-dark border-dark" type="button" onclick="addToCart(${phone.id}, 12);" value="Add to Cart"/>
+              <input id="add-to-cart" class="btn btn-outline-dark border-dark" type="button" onclick="addToCart(${phone.id});" value="Add to Cart"/>
             </td>
           </tr>
         </c:forEach>
