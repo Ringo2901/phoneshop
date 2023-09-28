@@ -24,7 +24,6 @@ public class JdbcStockDao implements StockDao {
     public void reserve(Long phoneId, Long quantity) {
         Stock stock = jdbcTemplate.query(GET_STOCK_BY_ID, new Object[]{phoneId}, stockExtractor).get(0);
         Integer newReserved = stock.getReserved() + quantity.intValue();
-        System.out.println(newReserved);
         jdbcTemplate.update(UPDATE_STOCK, newReserved, phoneId);
     }
 }
