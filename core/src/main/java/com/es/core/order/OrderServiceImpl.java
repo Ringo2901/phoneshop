@@ -52,14 +52,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void fillOrderItems(Order order, Cart cart) {
-        List<OrderItem> orderItems = new ArrayList<OrderItem>();
-        cart.getItems().stream().forEach(cartItem -> {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setPhone(cartItem.getPhone());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setOrder(order);
-            orderItems.add(orderItem);
-        });
+        List<OrderItem> orderItems = cart.getItems().stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setPhone(cartItem.getPhone());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setOrder(order);
+                    return orderItem;
+                })
+                .collect(Collectors.toList());
+
         order.setOrderItems(orderItems);
     }
 

@@ -87,6 +87,5 @@
       </table>
       <tags:pages page="${empty param.page or param.page lt 1 ? 1 : param.page}" lastPage="${numberOfPages}"/>
     </div>
-    <div class="col-2"></div>
   </div>
 </tags:master>
