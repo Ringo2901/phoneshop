@@ -30,11 +30,11 @@ public class JdbcPhoneDao implements PhoneDao {
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SIMPLE_FIND_ALL_QUERY = "select ph.* " +
             "from (select PHONES.* from PHONES " +
-            "join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 offset ? limit ?) ph";
+            "left join STOCKS on PHONES.ID = STOCKS.PHONEID where STOCKS.STOCK - STOCKS.RESERVED > 0 offset ? limit ?) ph";
     private static final String FIND_WITHOUT_OFFSET_AND_LIMIT = "SELECT ph.* " +
             "FROM (SELECT phones.* FROM phones " +
-            "JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 ";
-    private static final String NUMBER_OF_PHONES_QUERY = "SELECT count(*) FROM PHONES JOIN STOCKS ON PHONES.ID = STOCKS.PHONEID WHERE STOCKS.STOCK - STOCKS.RESERVED > 0";
+            "LEFT JOIN stocks ON phones.id = stocks.phoneId WHERE stocks.stock - stocks.reserved > 0 ";
+    private static final String NUMBER_OF_PHONES_QUERY = "SELECT count(*) FROM PHONES LEFT JOIN STOCKS ON PHONES.ID = STOCKS.PHONEID WHERE STOCKS.STOCK - STOCKS.RESERVED > 0";
     private static final String SELECT_COLOR_BY_CODE_QUERY = "SELECT colors.id FROM colors WHERE colors.code = ?";
     private static final String INSERT_NEW_COLOR_DEPENDENCE_QUERY = "INSERT INTO phone2color (phoneId, colorId) VALUES (?, ?)";
 
