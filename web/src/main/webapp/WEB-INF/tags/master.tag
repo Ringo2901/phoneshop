@@ -37,6 +37,12 @@
                         <span id="cartTotalCost"><c:out value="${cart.totalCost}"/></span>$
                     </button>
                     </form>
+                    <form action="<c:url value="/admin/orders"/>">
+                        <button class="btn btn-light"> Admin </button>
+                    </form>
+                    <form action="<c:url value="/"/>">
+                        <button class="btn btn-light"> Logout </button>
+                    </form>
                 </div>
             </div>
         </div>

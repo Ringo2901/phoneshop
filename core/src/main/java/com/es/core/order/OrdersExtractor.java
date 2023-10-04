@@ -34,6 +34,8 @@ public class OrdersExtractor implements ResultSetExtractor<List<Order>> {
             order.setContactPhoneNo(resultSet.getString("contactPhoneNo"));
             order.setAdditionalInformation(resultSet.getString("additionalInformation"));
             order.setStatus(OrderStatus.fromString(resultSet.getString("status")));
+            order.setDate(resultSet.getDate("date"));
+            order.setTime(resultSet.getTime("time"));
             order.setOrderItems(jdbcOrderItemDao.getOrderItems(order.getId()));
             orders.add(order);
         }

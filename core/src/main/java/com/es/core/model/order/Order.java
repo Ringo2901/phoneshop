@@ -1,6 +1,8 @@
 package com.es.core.model.order;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 public class Order
@@ -23,7 +25,8 @@ public class Order
     private String deliveryAddress;
     private String contactPhoneNo;
     private String additionalInformation;
-
+    private Date date;
+    private Time time;
     private OrderStatus status;
 
     public Long getId() {
@@ -120,5 +123,21 @@ public class Order
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
     }
 }
