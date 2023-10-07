@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +46,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void placeOrder(final Order order) throws OutOfStockException {
         checkStock(order);
+        order.setDate(new Date(Instant.now().toEpochMilli()));
+        order.setTime(new Time(Instant.now().toEpochMilli()));
         order.setStatus(OrderStatus.NEW);
         order.getOrderItems().stream()
                 .forEach(item -> stockDao.reserve(item.getPhone().getId(), item.getQuantity()));
@@ -51,6 +56,10 @@ public class OrderServiceImpl implements OrderService {
         cartService.clear();
     }
 
+    @Override
+    public void changeOrderStatus(Long id, OrderStatus status) {
+        orderDao.changeStatus(id, status);
+    }
     private void fillOrderItems(Order order, Cart cart) {
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(cartItem -> {
