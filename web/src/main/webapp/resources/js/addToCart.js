@@ -6,7 +6,7 @@ function addToCart(phoneId) {
     const messageBody = document.querySelector("#statusMessageBody");
     $.ajax({
         type: "POST",
-        url: contextPath + "/ajaxCart",
+        url: contextPath + "ajaxCart",
         data: JSON.stringify({phoneId, quantity : quant.value}),
         dataType: "json",
         contentType: "application/json",

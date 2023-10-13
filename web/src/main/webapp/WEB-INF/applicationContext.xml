@@ -15,7 +15,7 @@
 
     <security:http>
         <security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
-        <security:form-login login-page="/signIn" default-target-url="/" authentication-failure-url="/signIn?error=t" />
+        <security:form-login login-page="/signIn" default-target-url="/signIn/afterLogin" authentication-failure-url="/signIn?error=t" />
         <security:logout logout-success-url="/"/>
         <security:csrf disabled="true"/>
     </security:http>
