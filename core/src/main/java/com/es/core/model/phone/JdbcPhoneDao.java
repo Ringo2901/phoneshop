@@ -2,6 +2,7 @@ package com.es.core.model.phone;
 
 import com.es.core.enums.SortField;
 import com.es.core.enums.SortOrder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -49,38 +50,11 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public void save(final Phone phone) {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("id", phone.getId());
-        paramMap.put("brand", phone.getBrand());
-        paramMap.put("model", phone.getModel());
-        paramMap.put("price", phone.getPrice());
-        paramMap.put("displaySizeInches", phone.getDisplaySizeInches());
-        paramMap.put("weightGr", phone.getWeightGr());
-        paramMap.put("lengthMm", phone.getLengthMm());
-        paramMap.put("widthMm", phone.getWidthMm());
-        paramMap.put("heightMm", phone.getHeightMm());
-        paramMap.put("announced", phone.getAnnounced());
-        paramMap.put("deviceType", phone.getDeviceType());
-        paramMap.put("os", phone.getOs());
-        paramMap.put("displayResolution", phone.getDisplayResolution());
-        paramMap.put("pixelDensity", phone.getPixelDensity());
-        paramMap.put("displayTechnology", phone.getDisplayTechnology());
-        paramMap.put("backCameraMegapixels", phone.getBackCameraMegapixels());
-        paramMap.put("frontCameraMegapixels", phone.getFrontCameraMegapixels());
-        paramMap.put("ramGb", phone.getRamGb());
-        paramMap.put("internalStorageGb", phone.getInternalStorageGb());
-        paramMap.put("batteryCapacityMah", phone.getBatteryCapacityMah());
-        paramMap.put("talkTimeHours", phone.getTalkTimeHours());
-        paramMap.put("standByTimeHours", phone.getStandByTimeHours());
-        paramMap.put("bluetooth", phone.getBluetooth());
-        paramMap.put("positioning", phone.getPositioning());
-        paramMap.put("imageUrl", phone.getImageUrl());
-        paramMap.put("description", phone.getDescription());
-
-        namedParameterJdbcTemplate.update(SAVE_INSERT_QUERY, paramMap);
+        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(phone);
+        namedParameterJdbcTemplate.update(SAVE_INSERT_QUERY, parameterSource);
 
         phone.getColors().forEach(color -> {
-            paramMap.clear();
+            Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("code", color.getCode());
             Long colorId = namedParameterJdbcTemplate.queryForObject(SELECT_COLOR_BY_CODE_QUERY, paramMap, Long.class);
             paramMap.clear();
