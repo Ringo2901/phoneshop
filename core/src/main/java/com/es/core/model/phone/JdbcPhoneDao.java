@@ -84,7 +84,9 @@ public class JdbcPhoneDao implements PhoneDao {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("offset", offset);
         paramMap.put("limit", limit);
-
+        if (query!= null){
+            paramMap.put("query", query);
+        }
         return namedParameterJdbcTemplate.query(makeFindAllSQL(sortField, sortOrder, query), paramMap, phonesExtractor);
     }
 
