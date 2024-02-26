@@ -18,7 +18,9 @@ public class JdbcPhoneDao implements PhoneDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Resource
     private PhonesExtractor phonesExtractor;
-
+    private final String GET_BY_MODEL_QUERY = "SELECT * FROM phones LEFT JOIN phone2color ON phones.id = phone2color.phoneId " +
+            "LEFT JOIN colors ON phone2color.colorId = colors.id " +
+            "WHERE LOWER(phones.model)=LOWER(:model)";
     private static final String GET_QUERY = "SELECT ph.*, colors.code AS color " +
             "FROM (SELECT phones.* FROM phones WHERE phones.id = :id) AS ph " +
             "LEFT JOIN phone2color ON ph.id = phone2color.phoneId " +
@@ -47,7 +49,13 @@ public class JdbcPhoneDao implements PhoneDao {
         paramMap.put("id", key);
         return namedParameterJdbcTemplate.query(GET_QUERY, paramMap, phonesExtractor).stream().findAny();
     }
-
+    @Override
+    public Optional<Phone> get(String model) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("model", model);
+        List<Phone> phones = namedParameterJdbcTemplate.query(GET_BY_MODEL_QUERY, paramMap, phonesExtractor);
+        return Optional.ofNullable(!phones.isEmpty() ? phones.get(0) : null);
+    }
     @Override
     public void save(final Phone phone) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(phone);

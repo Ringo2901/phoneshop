@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
-
+<button class="btn btn-light" onclick="window.location.href='<c:url value="/quickCart"/>'">Quick Cart</button>
 <security:authorize access="hasRole('ADMIN')">
     <button class="btn btn-light" onclick="window.location.href='<c:url value="/admin/orders"/>'">Admin</button>
 </security:authorize>

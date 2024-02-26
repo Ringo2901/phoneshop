@@ -13,4 +13,5 @@ public interface PhoneDao {
     List<Phone> findAll(int offset, int limit, SortField sortField, SortOrder sortOrder, String query);
 
     Long numberByQuery(String query);
+    Optional<Phone> get(String model);
 }
